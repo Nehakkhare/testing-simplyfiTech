@@ -1,11 +1,16 @@
 package com.simplifitech;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.io.FileHandler;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -141,9 +146,25 @@ public class Simplifitech {
 	private void implicitWait(int time) {
 		driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
 	}
+	
+	private void takeScreenshot() throws IOException {
+		String path = "Screenshots/image/";
+		
+		File file = new File(path);
+		
+		if(!file.exists()) {
+			file.mkdirs();
+		}
+		
+		Date date = new Date();
+		String fileName = date.toString().replace(":", "_") + ".jpg";
+		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		FileHandler.copy(screenshot, new File(path+fileName));
+	}
 
 	@AfterMethod
-	public void closeBrowser() throws InterruptedException {
+	public void closeBrowser() throws InterruptedException, IOException {
+		takeScreenshot();
 		Thread.sleep(3000);
 		driver.quit();
 	}
